@@ -36,7 +36,7 @@ body{background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino
 h1,h2,h3,.disp{font-family:"Zen Maru Gothic","BIZ UDPGothic","Hiragino Maru Gothic ProN",sans-serif;text-wrap:balance;line-height:1.4;margin:0}
 p{margin:0}
 .wrap{max-width:780px;margin:0 auto;padding-block:0 72px}
-button{font:inherit;color:inherit}
+button{font:inherit;color:inherit;touch-action:manipulation}
 :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* header */
@@ -339,11 +339,12 @@ applyFs();
 /* actions */
 let A={};
 const BASE={
-  nav:v=>{({home,check:startTest,train:trainView,record,who})[v]()},
+  nav:v=>{if(testing){if(!confirm('チェックを中断しますか？\n途中までの答えは記録されません。'))return;testing=false}({home,check:startTest,train:trainView,record,who})[v]()},
   fs:()=>{const k=Object.keys(FS);store.fs=k[(k.indexOf(store.fs)+1)%k.length];save();applyFs()},
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=A[b.dataset.a]||BASE[b.dataset.a];if(f)f(b.dataset.v,b)});
 document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='nm'&&A.nmok){A.nmok(e.target.dataset.i);e.preventDefault();return}
   if(!document.querySelector('.keypad'))return;
   if(/^[0-9]$/.test(e.key)&&A.k){A.k(e.key);e.preventDefault()}
   else if(e.key==='Backspace'&&A.del){A.del();e.preventDefault()}
@@ -399,7 +400,7 @@ function home(){
   </div>
   <section>
     <h2>前回のチェック</h2>
-    ${last?`<div class="card" style="display:grid;gap:12px"><div class="score-head"><div class="score-big">${last.total}<small> / 30</small></div><div style="display:grid;gap:6px"><span class="pill ${lv.c}">${lv.n}</span><span class="note">${fmtDate(last.date)}</span></div></div><div class="row"><button class="btn" data-a="last">くわしく見る</button><button class="btn" data-a="nav" data-v="record">記録の推移</button></div></div>`
+    ${last?`<div class="card" style="display:grid;gap:12px"><div class="score-head"><div class="score-big">${last.total}<small> / 30</small></div><div style="display:grid;gap:6px"><span class="pill ${lv.c}">${lv.n}</span><span class="note">${fmtDate(last.date)}</span></div></div>${(()=>{const d=Math.floor((Date.now()-new Date(last.date))/864e5);return d>=30?`<p class="note">前回から${d}日たちました。そろそろ次のチェックをしてもよいころです（1〜3か月に1回が目安）。</p>`:''})()}<div class="row"><button class="btn" data-a="last">くわしく見る</button><button class="btn" data-a="nav" data-v="record">記録の推移</button></div></div>`
     :`<div class="card"><p>まだ記録がありません。最初のチェックで今の状態を記録しておくと、あとで変化に気づきやすくなります。チェックは<strong>1〜3か月に1回</strong>程度がおすすめです。</p></div>`}
   </section>
   <section>
@@ -423,7 +424,8 @@ function home(){
 }
 
 /* ---------- test ---------- */
-let T;
+let T,testing=false;
+window.addEventListener('beforeunload',e=>{if(testing){e.preventDefault();e.returnValue=''}});
 const STEPS=['見当識（日付）','ことばの記憶','計算','数字の逆唱','時計の読み取り','数字つなぎ','ことば探し','思い出し'];
 const prog=i=>`<div class="prog"><div class="prog-top"><span>課題 ${i+1} / ${STEPS.length}</span><span class="prog-name">${STEPS[i]}</span></div><div class="bar"><i style="width:${(i+.5)/STEPS.length*100}%"></i></div></div>`;
 
@@ -453,7 +455,7 @@ function orient(){
     {q:'今日は何曜日ですか？',cls:'grid4',opts:DAY.map((d,i)=>({v:String(i),t:d+'曜日'})),ans:String(W)},
     {q:'今の季節はどれですか？',opts:['春','夏','秋','冬'].map(s=>({v:s,t:s})),ans:season},
   ];
-  T.s.orient=0;let i=0;
+  testing=true;T.s.orient=0;let i=0;
   const ask=()=>{
     const q=Q[i];
     const next=v=>{if(v===q.ans)T.s.orient++;i++;i<Q.length?ask():memorize()};
@@ -565,7 +567,7 @@ function finishTest(){
   const s=T.s,dom={orient:s.orient,memory:s.imm+s.del,attn:s.calc+s.dig,vis:s.vis,exec:s.trail+s.flu};
   const total=Object.values(dom).reduce((a,b)=>a+b,0);
   const rec={date:new Date().toISOString(),total,dom,detail:{imm:s.imm,del:s.del,trailSec:T.trailSec?Math.round(T.trailSec):null,flu:T.fluNet}};
-  store.tests.push(rec);save();resultView(rec,true);
+  testing=false;store.tests.push(rec);save();resultView(rec,true);
 }
 
 function resultView(rec,fresh){
@@ -576,12 +578,15 @@ function resultView(rec,fresh){
   const recIds=[...new Set((weak.length?weak:rat.slice().sort((a,b)=>a.r-b.r)).slice(0,2).flatMap(d=>DOM_GAMES[d.k]))].slice(0,3);
   const bands=[['0〜17','要相談','bad',0,17],['18〜23','注意','warn',18,23],['24〜26','やや注意','mild',24,26],['27〜30','良好','good',27,30]];
   const dt=rec.detail||{};
+  const pi=store.tests.indexOf(rec),prev=pi>0?store.tests[pi-1]:null;
   screen(`
   <div class="task">
     <p class="eyebrow">${fresh?'おつかれさまでした':'チェック結果'}　${fmtDate(rec.date)}</p>
     <div class="score-head"><div class="score-big">${rec.total}<small> / 30点</small></div><span class="pill ${lv.c}">判定の目安：${lv.n}</span></div>
     <div class="scale">${bands.map(b=>`<div class="pill ${b[2]} ${rec.total>=b[3]&&rec.total<=b[4]?'on':''}" style="border-radius:8px;font-size:.8rem;padding:6px 2px">${b[0]}<br>${b[1]}</div>`).join('')}</div>
     <p>${lv.msg}</p>
+    ${prev?`<p class="note">前回（${fmtDate(prev.date)}）は ${prev.total}点でした。</p>`:''}
+    <p class="note">※点数は目安で、医学的な診断ではありません。くわしくは、この画面のいちばん下をご覧ください。</p>
   </div>
   <section>
     <h2>分野ごとの点数</h2>
@@ -731,7 +736,7 @@ function who(){
     <div style="display:grid;gap:14px">${[0,1,2].map(i=>{const d=i===people.cur?store:load(i),n=d.tests.length,last=d.tests[n-1];
       return `<div class="card who-card${i===people.cur?' cur':''}"><div class="who-name">${esc(pname(i))}</div>
       <p class="note">${n?`チェック ${n}回・前回 ${fmtDate(last.date)}`:'チェックの記録はまだありません'}</p>
-      ${editing===i?`<div class="who-edit"><input id="nm" maxlength="10" value="${esc(people.names[i])}" placeholder="${i+1}人目" aria-label="名前"><button class="btn primary" data-a="nmok" data-v="${i}">名前を保存</button></div>`
+      ${editing===i?`<div class="who-edit"><input id="nm" data-i="${i}" maxlength="10" value="${esc(people.names[i])}" placeholder="${i+1}人目" aria-label="名前"><button class="btn primary" data-a="nmok" data-v="${i}">名前を保存</button></div>`
       :`<div class="row">${i===people.cur?'<span class="pill good">いま使っています</span>':`<button class="btn primary" data-a="use" data-v="${i}">この人に切り替える</button>`}<button class="link" data-a="nmed" data-v="${i}">名前を変える</button></div>`}</div>`}).join('')}</div>
     <p class="note" style="margin-top:20px">名前はこの端末の中だけに保存されます。</p>`,{
       use:v=>{const fs=store.fs;people.cur=+v;savePeople();store=load(+v,fs);applyFs();applyWho();home()},
