@@ -371,7 +371,8 @@ function pickScreen(o){
     ok:()=>o.onDone([...sel]),
   });
 }
-const scorePick=(sel,tg)=>{const h=sel.filter(x=>tg.includes(x)).length;return Math.max(0,h-(sel.length-h))};
+/* 正しく選べた数だけを点数にする（選べるのは5つまでなので、まちがいの減点はしない） */
+const scorePick=(sel,tg)=>sel.filter(x=>tg.includes(x)).length;
 
 /* ---------- home ---------- */
 function levelOf(t){
