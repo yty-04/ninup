@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>あたまの健康手帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#EDF2F2; --surface:#FFFFFF; --surface2:#F5F8F8; --ink:#16252A; --muted:#4F6368; --line:#C6D4D6;
+  --accent:#1D6B74; --accent-ink:#FFFFFF; --accent-soft:#D5E9EA; --gold:#B7800F;
+  --good:#23794A; --good-soft:#DDF0E4; --mild:#8A6A00; --mild-soft:#F6ECC8; --warn:#B4531A; --warn-soft:#F8E1D2; --bad:#B0303A; --bad-soft:#F6D9DC;
+  --fs:19px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E181A; --surface:#16252A; --surface2:#1B2D32; --ink:#E4EDEE; --muted:#9FB3B6; --line:#2E4247;
+    --accent:#63BCC4; --accent-ink:#0B1A1C; --accent-soft:#1D3C41; --gold:#E3B24A;
+    --good:#6CC592; --good-soft:#193427; --mild:#E2C45A; --mild-soft:#35301A; --warn:#EE9A62; --warn-soft:#3A2618; --bad:#EE8189; --bad-soft:#3B1D21;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E181A; --surface:#16252A; --surface2:#1B2D32; --ink:#E4EDEE; --muted:#9FB3B6; --line:#2E4247;
+  --accent:#63BCC4; --accent-ink:#0B1A1C; --accent-soft:#1D3C41; --gold:#E3B24A;
+  --good:#6CC592; --good-soft:#193427; --mild:#E2C45A; --mild-soft:#35301A; --warn:#EE9A62; --warn-soft:#3A2618; --bad:#EE8189; --bad-soft:#3B1D21;
+}
+html{font-size:var(--fs)}
+body{background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-size:1rem;line-height:1.75;padding-inline:16px;-webkit-text-size-adjust:100%}
+h1,h2,h3,.disp{font-family:"Zen Maru Gothic","BIZ UDPGothic","Hiragino Maru Gothic ProN",sans-serif;text-wrap:balance;line-height:1.4;margin:0}
+p{margin:0}
+.wrap{max-width:780px;margin:0 auto;padding-block:0 72px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px 8px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:1.1rem}
+.brand-mark{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-size:.95rem}
+.fsbtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.3rem .9rem;font-size:.85rem;cursor:pointer;min-height:2.4rem}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.nav button{white-space:nowrap;padding:0 4px;border:1px solid var(--line);background:var(--surface);border-radius:12px;min-height:3rem;font-weight:700;cursor:pointer;font-size:.95rem}
+.nav button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* common */
+.hero{display:grid;gap:10px;margin-bottom:24px}
+.hero h1{font-size:1.9rem}
+.lead{color:var(--muted);max-width:36em}
+.eyebrow{font-size:.85rem;letter-spacing:.08em;color:var(--accent);font-weight:700}
+section{margin-top:32px;display:grid;gap:14px}
+section > h2{font-size:1.3rem}
+.muted{color:var(--muted)}
+.note{color:var(--muted);font-size:.95rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:12px}
+.action{display:grid;gap:4px;text-align:left;padding:20px;border-radius:18px;border:2px solid var(--line);background:var(--surface);cursor:pointer;min-height:7rem;align-content:center}
+.action.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.a-title{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:1.35rem}
+.a-sub{font-size:.92rem;opacity:.85}
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:12px}
+.gcard{display:grid;gap:6px;text-align:left;padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:var(--surface);cursor:pointer;align-content:start}
+.gcard:hover{border-color:var(--accent)}
+.gcard .g-name{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:1.2rem}
+.tag{display:inline-block;justify-self:start;font-size:.78rem;padding:.05rem .6rem;border-radius:999px;background:var(--accent-soft);color:var(--ink);letter-spacing:.04em}
+.gcard .g-desc{font-size:.92rem;color:var(--muted)}
+.gcard .g-best{font-size:.85rem;color:var(--accent);font-weight:700}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:3.3rem;padding:.5rem 1.2rem;border-radius:14px;border:2px solid var(--line);background:var(--surface);font-size:1.1rem;font-weight:700;cursor:pointer;text-align:center}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted);font-weight:400;font-size:.95rem;text-decoration:underline}
+.btn.wide{width:100%;max-width:26rem;justify-self:center}
+.btn:disabled{cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+
+/* task screens */
+.task{display:grid;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 18px}
+.task.center{text-align:center;justify-items:center}
+.q{font-size:1.45rem}
+.qsub{color:var(--muted);font-size:.95rem}
+.prog{display:grid;gap:6px;margin-bottom:14px}
+.prog-top{display:flex;justify-content:space-between;gap:10px;font-size:.92rem;color:var(--muted)}
+.prog-name{font-weight:700;color:var(--ink)}
+.bar{height:10px;border-radius:999px;background:var(--accent-soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .4s}
+.bar.thin{height:6px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:10px}
+.choices.grid4{grid-template-columns:repeat(auto-fill,minmax(5.6rem,1fr))}
+.choices.grid2{grid-template-columns:repeat(2,1fr)}
+.choice{min-height:3.6rem;font-size:1.2rem}
+.choice.right{background:var(--good-soft);border-color:var(--good)}
+.choice.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.quit{text-align:center;margin-top:14px}
+
+.words{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:10px}
+.word{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:1.7rem;text-align:center;padding:18px 8px;border-radius:14px;background:var(--surface2);border:1px solid var(--line)}
+.timer-line{display:grid;gap:6px;font-size:.92rem;color:var(--muted)}
+
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.2rem,1fr));gap:8px}
+.chip{min-height:3.3rem;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:1.15rem;font-weight:700;cursor:pointer;padding:.3rem .4rem}
+.chip.on{background:var(--accent-soft);border-color:var(--accent)}
+.chip.on::before{content:"✓ ";color:var(--accent)}
+.bottom-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.count{font-size:1rem;color:var(--muted)}
+.count b{color:var(--ink);font-size:1.3rem;font-variant-numeric:tabular-nums}
+
+.pad-display{display:flex;align-items:baseline;justify-content:center;gap:.4rem;padding:10px;border-radius:14px;border:2px solid var(--line);background:var(--surface2);min-height:4.2rem}
+.pad-display #pd{font-size:2.4rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.12em}
+.pad-display .unit{font-size:1.2rem;color:var(--muted)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:20rem;justify-self:center}
+.key{min-height:3.6rem;border-radius:14px;border:2px solid var(--line);background:var(--surface);font-size:1.6rem;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums}
+.key:active{background:var(--accent-soft)}
+.key.sub{font-size:1rem;color:var(--muted)}
+.key.ok{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:1.1rem}
+
+.flash{font-size:6rem;font-weight:700;min-height:9rem;min-width:9rem;display:grid;place-items:center;border-radius:24px;background:var(--surface2);border:2px solid var(--line);font-variant-numeric:tabular-nums;transition:opacity .15s;opacity:.25}
+.flash.on{opacity:1}
+
+.clock-wrap{display:grid;place-items:center}
+.clock-wrap svg{width:min(15rem,70vw);height:auto}
+.ck-face{fill:var(--surface2);stroke:var(--ink);stroke-width:4}
+.ck-tick{stroke:var(--muted);stroke-width:1.5}
+.ck-tick.big{stroke:var(--ink);stroke-width:3}
+.ck-num{fill:var(--ink);font-family:"BIZ UDPGothic",sans-serif;font-weight:700;font-size:17px}
+.ck-h{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
+.ck-m{stroke:var(--ink);stroke-width:3.5;stroke-linecap:round}
+.ck-c{fill:var(--ink)}
+
+.trail-top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:1.05rem}
+.trail-top b{font-size:1.5rem;color:var(--accent)}
+.tnum{font-variant-numeric:tabular-nums;color:var(--muted)}
+.board{position:relative;width:100%;max-width:30rem;aspect-ratio:1;justify-self:center;background:var(--surface2);border:1px solid var(--line);border-radius:16px}
+.dot{position:absolute;transform:translate(-50%,-50%);width:15%;aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--surface);font-weight:700;font-size:1.25rem;cursor:pointer;padding:0;font-variant-numeric:tabular-nums}
+.dot.done,.tcell.done{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);opacity:.55}
+.shake{animation:shake .35s}
+@keyframes shake{0%,100%{translate:0}25%{translate:-6px}75%{translate:6px}}
+.tgrid{display:grid;gap:8px;width:100%;max-width:28rem;justify-self:center}
+.tcell{aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:var(--surface);font-size:1.5rem;font-weight:700;cursor:pointer;font-variant-numeric:tabular-nums;padding:0}
+
+.pgrid{display:grid;gap:8px;width:100%;max-width:30rem;justify-self:center}
+.pcard{aspect-ratio:3/4;border-radius:10px;border:2px solid #0F4F57;cursor:pointer;padding:0;position:relative;overflow:hidden;
+  background:repeating-linear-gradient(45deg,#1D6B74 0 8px,#175A62 8px 16px)}
+.pcard .face{position:absolute;inset:0;display:grid;place-items:center;font-family:"Zen Maru Gothic",serif;font-weight:700;font-size:1.9rem;background:#FBFAF6;opacity:0;transition:opacity .15s}
+.pcard.up .face{opacity:1}
+.pcard.got{border-color:#23794A}
+.pcard.got .face{background:#E7F3EA}
+
+.stroop-card{background:#FFFFFF;border:2px solid #C6D4D6;border-radius:18px;min-height:9rem;display:grid;place-items:center;font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:3.4rem;letter-spacing:.08em}
+.sw{display:inline-block;width:1rem;height:1rem;border-radius:50%}
+.fb{font-weight:700;min-height:1.6rem}
+.fb.ok{color:var(--good)} .fb.ng{color:var(--bad)}
+.calc-q{font-size:2.6rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+
+.memo{justify-self:center;width:100%;max-width:22rem;background:#FFFDF3;color:#2A2A22;border-radius:6px;padding:18px 22px;box-shadow:0 2px 0 #E4DCBC,0 6px 14px rgba(0,0,0,.08);
+  background-image:repeating-linear-gradient(#FFFDF3 0 2.4rem,#D9E4EC 2.4rem calc(2.4rem + 1px))}
+.memo-line{font-size:1.35rem;font-weight:700;line-height:2.4rem;height:2.4rem}
+.memo-line::before{content:"・"}
+.explain{padding:14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line)}
+.explain.ok b{color:var(--good)} .explain.ng b{color:var(--bad)}
+
+/* result */
+.score-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 22px}
+.score-big{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:4rem;line-height:1;font-variant-numeric:tabular-nums}
+.score-big small{font-size:1.4rem;color:var(--muted)}
+.pill{display:inline-block;padding:.25rem 1rem;border-radius:999px;font-weight:700;font-size:1.05rem}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.mild{background:var(--mild-soft);color:var(--mild)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.doms{display:grid;gap:14px}
+.dom{display:grid;grid-template-columns:7.5rem 1fr 3.6rem;gap:10px;align-items:center}
+.dom-name{font-weight:700}
+.dom-name small{display:block;font-weight:400;font-size:.78rem;color:var(--muted);line-height:1.4}
+.dom-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.dom .bar{height:14px}
+.dom.low .bar i{background:var(--warn)}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:.8rem;text-align:center}
+.scale div{padding:6px 2px;border-radius:8px}
+.scale .on{outline:2px solid var(--ink)}
+.disclaimer{font-size:.9rem;color:var(--muted);border-left:4px solid var(--line);padding:4px 0 4px 14px}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:10px}
+.tip{padding:14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.tip b{display:block;font-family:"Zen Maru Gothic",sans-serif;font-size:1.05rem;margin-bottom:2px}
+.tip span{font-size:.9rem;color:var(--muted)}
+
+/* records */
+.chart svg{width:100%;height:auto;display:block}
+.c-grid{stroke:var(--line);stroke-width:1}
+.c-th{stroke:var(--muted);stroke-width:1;stroke-dasharray:5 5}
+.c-lbl{fill:var(--muted);font-size:13px;font-family:"BIZ UDPGothic",sans-serif}
+.c-line{fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
+.c-area{fill:var(--accent-soft);opacity:.7}
+.c-pt{fill:var(--surface);stroke:var(--accent);stroke-width:3}
+.c-pt.last{fill:var(--accent)}
+.c-val{fill:var(--ink);font-size:14px;font-weight:700;font-family:"BIZ UDPGothic",sans-serif}
+.c-band{fill:var(--good-soft);opacity:.6}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem;font-variant-numeric:tabular-nums}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:.82rem;color:var(--muted);font-weight:700}
+td.num{text-align:right}
+.sample-flag{font-size:.82rem;color:var(--gold);font-weight:700}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:.92rem;padding:8px}
+.danger{color:var(--bad)}
+
+@media (max-width:480px){
+  .hero h1{font-size:1.6rem}
+  .q{font-size:1.25rem}
+  .dom{grid-template-columns:6.2rem 1fr 3.2rem}
+  .task{padding:18px 14px}
+  .score-big{font-size:3.3rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="top-row">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">脳</span>あたまの健康手帳</div>
+      <button class="fsbtn" id="fsbtn" data-a="fs">文字：標準</button>
+    </div>
+    <nav class="nav" aria-label="メニュー">
+      <button data-a="nav" data-v="home">ホーム</button>
+      <button data-a="nav" data-v="check">チェック</button>
+      <button data-a="nav" data-v="train">脳トレ</button>
+      <button data-a="nav" data-v="record">記録</button>
+    </nav>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const DAY=['日','月','火','水','木','金','土'];
+const WORDSETS=[
+  {w:['りんご','自転車','ねこ','えんぴつ','さくら'], d:['みかん','自動車','いぬ','ボールペン','うめ','バナナ','電車','うさぎ','消しゴム','ばら']},
+  {w:['ぶどう','電車','すずめ','はさみ','ひまわり'], d:['もも','バス','からす','のり','あさがお','いちご','飛行機','はと','ホチキス','チューリップ']},
+  {w:['大根','帽子','うま','太鼓','富士山'], d:['にんじん','手袋','うし','笛','海','ごぼう','かさ','ひつじ','鈴','川']},
+  {w:['すいか','船','かえる','ほうき','つばき'], d:['メロン','ヨット','とかげ','ちりとり','さざんか','かき','いかだ','へび','ぞうきん','ききょう']},
+];
+const ANIMALS=['いぬ','ねこ','うし','うま','ぶた','ひつじ','やぎ','さる','とら','ぞう','きりん','くま','しか','うさぎ','たぬき','きつね','ねずみ','りす','らいおん','かば'];
+const OTHERS=['つくえ','いす','かさ','なべ','きゅうり','トマト','みかん','ごはん','せっけん','はさみ','くつ','ぼうし','えんぴつ','でんわ','ほん','やかん','まくら','とけい','めがね','たまご'];
+const FACES=[{k:'山',c:'#1E6B3A'},{k:'川',c:'#1F5FC4'},{k:'花',c:'#C2365A'},{k:'月',c:'#8A6A00'},{k:'日',c:'#C0392B'},{k:'雨',c:'#2C6E91'},{k:'魚',c:'#117A8B'},{k:'鳥',c:'#7D3C98'},{k:'木',c:'#2E7D32'},{k:'火',c:'#D35400'},{k:'石',c:'#555F61'},{k:'竹',c:'#3B8A5A'}];
+const SHOP=['牛乳','たまご','食パン','とうふ','納豆','りんご','バナナ','大根','にんじん','キャベツ','玉ねぎ','しょうゆ','みそ','砂糖','ティッシュ','電池','石けん','歯ブラシ','切手','お茶','さけ','ねぎ','トマト','ヨーグルト','ハム','きゅうり'];
+const ODD=[
+ {w:['りんご','みかん','ぶどう','にんじん'],a:'にんじん',why:'野菜です。ほかは果物。'},
+ {w:['いぬ','ねこ','うさぎ','すずめ'],a:'すずめ',why:'鳥です。ほかは4本足のけもの。'},
+ {w:['はさみ','のり','ホチキス','やかん'],a:'やかん',why:'台所の道具です。ほかは文房具。'},
+ {w:['東京','大阪','名古屋','ハワイ'],a:'ハワイ',why:'日本の都市ではありません。'},
+ {w:['春','夏','秋','月曜'],a:'月曜',why:'季節ではありません。'},
+ {w:['ピアノ','バイオリン','太鼓','テレビ'],a:'テレビ',why:'楽器ではありません。'},
+ {w:['赤','青','黄','丸'],a:'丸',why:'色ではなく形です。'},
+ {w:['野球','サッカー','相撲','将棋'],a:'将棋',why:'体を動かすスポーツではありません。'},
+ {w:['バス','電車','飛行機','信号'],a:'信号',why:'乗り物ではありません。'},
+ {w:['まぐろ','さば','いわし','いか'],a:'いか',why:'魚ではありません。'},
+ {w:['正月','ひな祭り','七夕','運動靴'],a:'運動靴',why:'年中行事ではありません。'},
+ {w:['鉛筆','ボールペン','万年筆','消しゴム'],a:'消しゴム',why:'字を書く道具ではありません。'},
+ {w:['シャツ','ズボン','セーター','まくら'],a:'まくら',why:'身に着けるものではありません。'},
+ {w:['北海道','沖縄','京都','ソウル'],a:'ソウル',why:'日本の地名ではありません。'},
+ {w:['1','3','5','8'],a:'8',why:'偶数です。ほかは奇数。'},
+ {w:['10','20','30','35'],a:'35',why:'10の倍数ではありません。'},
+ {w:['お茶','牛乳','ジュース','おにぎり'],a:'おにぎり',why:'飲み物ではありません。'},
+ {w:['冷蔵庫','洗濯機','掃除機','ほうき'],a:'ほうき',why:'電気を使いません。'},
+ {w:['富士山','阿蘇山','浅間山','琵琶湖'],a:'琵琶湖',why:'山ではなく湖です。'},
+ {w:['医者','看護師','薬剤師','大工'],a:'大工',why:'医療の仕事ではありません。'},
+ {w:['日曜','月曜','火曜','一月'],a:'一月',why:'曜日ではありません。'},
+ {w:['うどん','そば','ラーメン','すし'],a:'すし',why:'麺類ではありません。'},
+ {w:['くつ','げた','サンダル','てぶくろ'],a:'てぶくろ',why:'足にはくものではありません。'},
+ {w:['雪','雨','ひょう','虹'],a:'虹',why:'空から降ってくるものではありません。'},
+ {w:['2','4','6','9'],a:'9',why:'奇数です。ほかは偶数。'},
+];
+const DOMS=[
+ {k:'orient',n:'見当識',max:5,d:'日付・季節の把握'},
+ {k:'memory',n:'記憶',max:10,d:'覚えて思い出す力'},
+ {k:'attn',n:'注意・計算',max:7,d:'頭の中で操作する力'},
+ {k:'vis',n:'視空間',max:2,d:'図や時計を読む力'},
+ {k:'exec',n:'実行機能',max:6,d:'素早い判断・段取り'},
+];
+const DOM_GAMES={orient:['odd','shop'],memory:['shop','pairs'],attn:['calc','touch'],vis:['pairs','touch'],exec:['stroop','touch']};
+const GAMES=[
+ {id:'touch',name:'数字タッチ',area:'注意・処理速度',desc:'バラバラに並んだ数字を1から順に押します。',how:'画面に並んだ数字を、1から順番にできるだけ速く押してください。かかった時間が短いほど良い結果です。',levels:['やさしい（1〜9）','ふつう（1〜16）','むずかしい（1〜25）'],better:'low'},
+ {id:'pairs',name:'絵合わせ',area:'記憶',desc:'神経衰弱です。同じ漢字の札を2枚そろえます。',how:'札を2枚ずつめくり、同じ漢字をそろえます。めくった場所を覚えておくのがコツです。めくった回数が少ないほど良い結果です。',levels:['やさしい（6組）','ふつう（8組）','むずかしい（10組）'],better:'low'},
+ {id:'stroop',name:'色と文字',area:'実行機能',desc:'文字の意味ではなく「文字の色」を答えます。',how:'表示された文字の「色」を下のボタンから選びます。「あか」という文字が青色で書かれていたら「あお」が正解です。まちがえると3秒加算されます。',levels:['やさしい（●の色）','ふつう（色の名前）','むずかしい（ひっかけ多め）'],better:'low'},
+ {id:'calc',name:'1分間計算',area:'注意・計算',desc:'60秒で何問解けるか挑戦します。',how:'60秒の間に、表示された計算をできるだけ多く解いてください。数字を押して「決定」で答えます。',levels:['やさしい（1けた）','ふつう（2けた±1けた）','むずかしい（2けた同士・九九）'],better:'high'},
+ {id:'shop',name:'おつかいメモ',area:'記憶',desc:'買い物メモを覚えて、お店で選びます。',how:'買い物メモを覚えたあと、メモにあった品物を選びます。正しく選んだ数から、まちがいの数を引いた点数になります。',levels:['やさしい（4品）','ふつう（6品）','むずかしい（8品）'],better:'high'},
+ {id:'odd',name:'仲間はずれ',area:'言語・思考',desc:'4つのことばから、仲間でないものを選びます。',how:'4つのことばのうち、1つだけ仲間はずれがあります。それを選んでください。',levels:['5問','10問','15問'],better:'high'},
+];
+const GAME=Object.fromEntries(GAMES.map(g=>[g.id,g]));
+
+/* ---------- utils ---------- */
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const rand=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+let timers=[];
+const later=(f,ms)=>{const t=setTimeout(f,ms);timers.push(t);return t};
+const every=(f,ms)=>{const t=setInterval(f,ms);timers.push(t);return t};
+const clearTimers=()=>{timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[]};
+const fmtDate=iso=>{const d=new Date(iso);return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`};
+const md=iso=>{const d=new Date(iso);return `${d.getMonth()+1}/${d.getDate()}`};
+function shake(b){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+
+/* storage (this browser only) */
+function load(){try{const s=JSON.parse(localStorage.getItem('atama_v1')||'null');if(s&&Array.isArray(s.tests))return Object.assign({train:{},fs:'m'},s)}catch(e){}return {tests:[],train:{},fs:'m'}}
+function save(){try{localStorage.setItem('atama_v1',JSON.stringify(store))}catch(e){}}
+let store=load();
+
+/* font size */
+const FS={m:['19px','標準'],l:['22px','大'],xl:['25px','特大']};
+function applyFs(){const f=FS[store.fs]||FS.m;document.documentElement.style.setProperty('--fs',f[0]);$('#fsbtn').textContent='文字：'+f[1]}
+applyFs();
+
+/* actions */
+let A={};
+const BASE={
+  nav:v=>{({home,check:startTest,train:trainView,record})[v]()},
+  fs:()=>{const k=Object.keys(FS);store.fs=k[(k.indexOf(store.fs)+1)%k.length];save();applyFs()},
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=A[b.dataset.a]||BASE[b.dataset.a];if(f)f(b.dataset.v,b)});
+document.addEventListener('keydown',e=>{
+  if(!document.querySelector('.keypad'))return;
+  if(/^[0-9]$/.test(e.key)&&A.k){A.k(e.key);e.preventDefault()}
+  else if(e.key==='Backspace'&&A.del){A.del();e.preventDefault()}
+  else if(e.key==='Enter'&&A.ok){A.ok();e.preventDefault()}
+});
+function screen(html,acts){clearTimers();A=Object.assign({},acts||{});app.innerHTML=html;window.scrollTo(0,0)}
+function setNav(v){document.querySelectorAll('.nav button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.v===v));document.querySelectorAll('.nav button[aria-current]').forEach(b=>b.setAttribute('aria-current','page'))}
+const keypad=()=>`<div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="key" data-a="k" data-v="${n}">${n}</button>`).join('')}<button class="key sub" data-a="del">1字けす</button><button class="key" data-a="k" data-v="0">0</button><button class="key ok" data-a="ok">決定</button></div>`;
+const quitLink=()=>`<p class="quit"><button class="link" data-a="nav" data-v="home">チェックを中断する</button></p>`;
+
+function padScreen(o){
+  let val='';
+  const draw=()=>{$('#pd').textContent=val||'　'};
+  screen(`${o.head||''}<div class="task">${o.sub?`<p class="qsub">${o.sub}</p>`:''}<h2 class="q">${o.q}</h2>${o.extra||''}<div class="pad-display"><span id="pd">　</span>${o.unit?`<span class="unit">${o.unit}</span>`:''}</div>${keypad()}</div>${o.foot||''}`,{
+    k:v=>{if(val.length<o.maxLen){val+=v;draw()}},
+    del:()=>{val=val.slice(0,-1);draw()},
+    ok:()=>{if(val)o.onEnter(val)},
+  });
+}
+function pickScreen(o){
+  const sel=new Set();
+  screen(`${o.head||''}<div class="task"><p class="qsub">${o.sub}</p><h2 class="q">${o.q}</h2><div class="chips">${o.words.map(w=>`<button class="chip" data-a="t" data-v="${w}" aria-pressed="false">${w}</button>`).join('')}</div><div class="bottom-row"><span class="count">選んだ数 <b id="cnt">0</b> / ${o.max}</span><button class="btn primary" data-a="ok">これで決定</button></div></div>${o.foot||''}`,{
+    t:(v,b)=>{if(sel.has(v))sel.delete(v);else if(sel.size<o.max)sel.add(v);else{shake($('#cnt').parentNode);return}b.classList.toggle('on',sel.has(v));b.setAttribute('aria-pressed',sel.has(v));$('#cnt').textContent=sel.size},
+    ok:()=>o.onDone([...sel]),
+  });
+}
+const scorePick=(sel,tg)=>{const h=sel.filter(x=>tg.includes(x)).length;return Math.max(0,h-(sel.length-h))};
+
+/* ---------- home ---------- */
+function levelOf(t){
+  if(t>=27)return {n:'良好',c:'good',msg:'年齢相応の範囲と考えられます。今の生活習慣と脳トレを続けましょう。'};
+  if(t>=24)return {n:'やや注意',c:'mild',msg:'軽いもの忘れの範囲ですが、軽度認知障害（MCI）の入り口にあたる点数帯でもあります。1〜3か月後にもう一度チェックし、点数が下がるようなら、かかりつけ医に相談しましょう。'};
+  if(t>=18)return {n:'注意',c:'warn',msg:'いくつかの分野で点数が下がっています。一度、かかりつけ医や「もの忘れ外来」に相談することをおすすめします。'};
+  return {n:'要相談',c:'bad',msg:'日常生活に影響が出ている可能性があります。早めに医療機関（もの忘れ外来・脳神経内科など）や、お住まいの地域包括支援センターに相談してください。'};
+}
+function bestOf(id,lv){const l=(store.train[id]||[]).filter(r=>r.lv===lv);if(!l.length)return null;const g=GAME[id];return l.reduce((a,b)=>(g.better==='low'?b.pts<a.pts:b.pts>a.pts)?b:a)}
+function gameCard(g){const n=(store.train[g.id]||[]).length;return `<button class="gcard" data-a="game" data-v="${g.id}"><span class="tag">${g.area}</span><span class="g-name">${g.name}</span><span class="g-desc">${g.desc}</span>${n?`<span class="g-best">これまで ${n} 回</span>`:''}</button>`}
+function todayPicks(){const d=Math.floor(Date.now()/864e5);return [0,2,4].map(k=>GAMES[(d+k)%GAMES.length])}
+
+function home(){
+  setNav('home');
+  const last=store.tests[store.tests.length-1];
+  const lv=last&&levelOf(last.total);
+  screen(`
+  <section class="hero" style="margin-top:0">
+    <p class="eyebrow">もの忘れチェックと脳トレ</p>
+    <h1>今のあたまの状態を知って、<br>毎日すこしずつ鍛える</h1>
+    <p class="lead">医療機関で使われる認知機能検査の考え方をもとにした「認知チェック」で5つの分野を点数化し、弱い分野に合わせた脳トレを続けられます。</p>
+  </section>
+  <div class="two">
+    <button class="action primary" data-a="nav" data-v="check"><span class="a-title">認知チェックを受ける</span><span class="a-sub">8つの課題・約10分・30点満点</span></button>
+    <button class="action" data-a="nav" data-v="train"><span class="a-title">脳トレをする</span><span class="a-sub">6種類・1回2〜3分</span></button>
+  </div>
+  <section>
+    <h2>前回のチェック</h2>
+    ${last?`<div class="card" style="display:grid;gap:12px"><div class="score-head"><div class="score-big">${last.total}<small> / 30</small></div><div style="display:grid;gap:6px"><span class="pill ${lv.c}">${lv.n}</span><span class="note">${fmtDate(last.date)}</span></div></div><div class="row"><button class="btn" data-a="last">くわしく見る</button><button class="btn" data-a="nav" data-v="record">記録の推移</button></div></div>`
+    :`<div class="card"><p>まだ記録がありません。最初のチェックで今の状態を記録しておくと、あとで変化に気づきやすくなります。チェックは<strong>1〜3か月に1回</strong>程度がおすすめです。</p></div>`}
+  </section>
+  <section>
+    <h2>今日のおすすめ脳トレ</h2>
+    <div class="games">${todayPicks().map(gameCard).join('')}</div>
+  </section>
+  <section>
+    <h2>脳の健康のために、ふだんからできること</h2>
+    <div class="tips">
+      <div class="tip"><b>体を動かす</b><span>早歩きなど、少し息がはずむ運動を週に合計150分ほど。</span></div>
+      <div class="tip"><b>人と話す</b><span>会話や趣味の集まりは、記憶と注意を同時に使う良い刺激です。</span></div>
+      <div class="tip"><b>耳と目を大切に</b><span>聞こえにくさは認知機能低下の要因の一つ。補聴器や眼鏡を合わせましょう。</span></div>
+      <div class="tip"><b>血圧・血糖を整える</b><span>高血圧や糖尿病の管理は、脳の血管を守ることにつながります。</span></div>
+      <div class="tip"><b>よく眠る</b><span>睡眠中に記憶が整理されます。昼寝は30分以内に。</span></div>
+    </div>
+  </section>
+  <section>
+    <h2>ご家族の方へ</h2>
+    <p class="note">ご本人が画面の操作に慣れていない場合は、隣でボタン操作だけ手伝ってください。答えのヒントは出さないようにすると、正確な結果になります。ご本人に「テスト」と構えさせず、「脳の健康チェック」として気軽に誘うのがコツです。</p>
+  </section>`,{last:()=>resultView(last,false),game:gameIntro});
+}
+
+/* ---------- test ---------- */
+let T;
+const STEPS=['見当識（日付）','ことばの記憶','計算','数字の逆唱','時計の読み取り','数字つなぎ','ことば探し','思い出し'];
+const prog=i=>`<div class="prog"><div class="prog-top"><span>課題 ${i+1} / ${STEPS.length}</span><span class="prog-name">${STEPS[i]}</span></div><div class="bar"><i style="width:${(i+.5)/STEPS.length*100}%"></i></div></div>`;
+
+function startTest(){
+  setNav('check');
+  T={set:WORDSETS[store.tests.length%WORDSETS.length],s:{}};
+  screen(`<div class="task">
+    <p class="eyebrow">認知チェック</p>
+    <h2 class="q">8つの課題に答えていただきます</h2>
+    <p>所要時間は約10分、30点満点です。静かな場所で、ふだん使っている眼鏡や補聴器をつけて始めてください。</p>
+    <ul style="margin:0;padding-left:1.2em;display:grid;gap:4px">
+      <li>カレンダー・時計・メモは見ないでください</li>
+      <li>わからない問題は、思いつく答えで大丈夫です</li>
+      <li>途中でやめると記録は残りません</li>
+    </ul>
+    <button class="btn primary wide" data-a="go">チェックを始める</button>
+  </div>`,{go:orient});
+}
+
+function orient(){
+  const now=new Date(),Y=now.getFullYear(),M=now.getMonth()+1,D=now.getDate(),W=now.getDay();
+  const season=M>=3&&M<=5?'春':M>=6&&M<=8?'夏':M>=9&&M<=11?'秋':'冬';
+  const Q=[
+    {q:'今年は西暦何年ですか？',opts:shuffle([Y-2,Y-1,Y,Y+1]).map(y=>({v:String(y),t:y+'年'})),ans:String(Y)},
+    {q:'今は何月ですか？',cls:'grid4',opts:[...Array(12)].map((_,i)=>({v:String(i+1),t:(i+1)+'月'})),ans:String(M)},
+    {q:'今日は何日ですか？',pad:true,ans:String(D)},
+    {q:'今日は何曜日ですか？',cls:'grid4',opts:DAY.map((d,i)=>({v:String(i),t:d+'曜日'})),ans:String(W)},
+    {q:'今の季節はどれですか？',opts:['春','夏','秋','冬'].map(s=>({v:s,t:s})),ans:season},
+  ];
+  T.s.orient=0;let i=0;
+  const ask=()=>{
+    const q=Q[i];
+    const next=v=>{if(v===q.ans)T.s.orient++;i++;i<Q.length?ask():memorize()};
+    const sub=`カレンダーや時計を見ずに答えてください（${i+1} / 5）`;
+    if(q.pad)padScreen({head:prog(0),sub,q:q.q,unit:'日',maxLen:2,onEnter:v=>next(String(parseInt(v,10))),foot:quitLink()});
+    else screen(`${prog(0)}<div class="task"><p class="qsub">${sub}</p><h2 class="q">${q.q}</h2><div class="choices ${q.cls||''}">${q.opts.map(o=>`<button class="btn choice" data-a="p" data-v="${o.v}">${o.t}</button>`).join('')}</div></div>${quitLink()}`,{p:next});
+  };
+  ask();
+}
+
+function wordsShow(sec,title,sub,next){
+  let left=sec;
+  screen(`${prog(1)}<div class="task"><p class="qsub">${sub}</p><h2 class="q">${title}</h2><div class="words">${T.set.w.map(w=>`<div class="word">${w}</div>`).join('')}</div><div class="timer-line"><span id="tl">あと ${left} 秒</span><div class="bar thin"><i id="tb" style="width:100%"></i></div></div><button class="btn primary wide" data-a="ok">覚えました</button></div>${quitLink()}`,{ok:next});
+  every(()=>{left--;const tl=$('#tl');if(tl){tl.textContent=`あと ${Math.max(left,0)} 秒`;$('#tb').style.width=Math.max(0,left/sec*100)+'%'}if(left<=0)next()},1000);
+}
+function memorize(){wordsShow(25,'声に出して読みながら、5つのことばを覚えてください','このことばは、あとで2回思い出していただきます。',recall1)}
+function recall1(){
+  pickScreen({head:prog(1),sub:'思い出せる分だけで大丈夫です。',q:'さきほど覚えた5つのことばを選んでください',words:shuffle([...T.set.w,...T.set.d.slice(0,5)]),max:5,foot:quitLink(),
+    onDone:s=>{T.s.imm=scorePick(s,T.set.w);wordsShow(10,'もう一度確認しましょう','このことばは、最後にもう一度お聞きします。',calc)}});
+}
+
+function calc(){
+  T.s.calc=0;let prev=100,i=0;
+  const ask=()=>padScreen({head:prog(2),sub:`${i+1} / 5 問目`,q:i===0?'100 から 7 を引くと、いくつですか？':'そこから、さらに 7 を引くと、いくつですか？',
+    extra:i>0?'<p class="note">前の答えは表示されません。頭の中で覚えておいてください。</p>':'',maxLen:3,foot:quitLink(),
+    onEnter:v=>{const n=parseInt(v,10);if(n===prev-7)T.s.calc++;prev=n;i++;i<5?ask():digits()}});
+  ask();
+}
+
+function digits(){
+  T.s.dig=0;const lens=[3,4];let li=0;
+  const intro=()=>screen(`${prog(3)}<div class="task"><p class="qsub">${li+1} / 2 問目（${lens[li]}けた）</p><h2 class="q">数字が1つずつ出ます。終わったら<u>逆の順番</u>で入力してください。</h2><p class="note">例：「2・8・5」と出たら「5・8・2」と入力します。</p><button class="btn primary wide" data-a="go">数字を見る</button></div>${quitLink()}`,{go:show});
+  const show=()=>{
+    const seq=shuffle([1,2,3,4,5,6,7,8,9]).slice(0,lens[li]).map(String);let k=0;
+    screen(`${prog(3)}<div class="task center"><p class="qsub">よく見てください</p><div class="flash" id="fl" aria-live="assertive"></div></div>`);
+    const step=()=>{const f=$('#fl');if(!f)return;if(k<seq.length){f.textContent=seq[k];f.classList.add('on');later(()=>{f.classList.remove('on');f.textContent='';k++;later(step,350)},1000)}else ask(seq)};
+    later(step,700);
+  };
+  const ask=seq=>padScreen({head:prog(3),sub:`${seq.length}けたの数字`,q:'逆の順番で入力してください',maxLen:seq.length,foot:quitLink(),
+    onEnter:v=>{const ok=v===seq.slice().reverse().join('');if(ok)T.s.dig++;li++;if(ok&&li<lens.length)intro();else clock()}});
+  intro();
+}
+
+function clockSVG(h,m){
+  let s='<svg viewBox="0 0 200 200" role="img" aria-label="アナログ時計"><circle class="ck-face" cx="100" cy="100" r="92"/>';
+  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,big=i%5===0,r1=big?80:84;s+=`<line class="ck-tick${big?' big':''}" x1="${100+r1*Math.sin(a)}" y1="${100-r1*Math.cos(a)}" x2="${100+88*Math.sin(a)}" y2="${100-88*Math.cos(a)}"/>`}
+  for(let n=1;n<=12;n++){const a=n*30*Math.PI/180;s+=`<text class="ck-num" x="${100+66*Math.sin(a)}" y="${100-66*Math.cos(a)+6}" text-anchor="middle">${n}</text>`}
+  const ha=((h%12)+m/60)*30*Math.PI/180,ma=m*6*Math.PI/180;
+  s+=`<line class="ck-h" x1="100" y1="100" x2="${100+40*Math.sin(ha)}" y2="${100-40*Math.cos(ha)}"/><line class="ck-m" x1="100" y1="100" x2="${100+60*Math.sin(ma)}" y2="${100-60*Math.cos(ma)}"/><circle class="ck-c" cx="100" cy="100" r="5"/></svg>`;
+  return s;
+}
+function makeClockItems(n){
+  const mins=[10,15,20,25,35,40,50],out=[];
+  while(out.length<n){
+    const h=1+rand(12),m=mins[rand(mins.length)];if(out.some(o=>o.h===h))continue;
+    const c=[];const add=(hh,mm)=>{hh=((hh-1+24)%12)+1;if(mm<=0||mm>=60)return;if(hh===h&&mm===m)return;if(c.some(x=>x.h===hh&&x.m===mm))return;c.push({h:hh,m:mm})};
+    add(m/5,h*5);add(h+1,m);add(h,(m+30)%60);add(h-1,m);add(h,60-m);
+    out.push({h,m,opts:shuffle([{h,m,ok:true},...c.slice(0,3)])});
+  }
+  return out;
+}
+function clock(){
+  T.s.vis=0;const items=makeClockItems(2);let i=0;
+  const ask=()=>{const it=items[i];
+    screen(`${prog(4)}<div class="task"><p class="qsub">${i+1} / 2 問目</p><h2 class="q">この時計は何時何分を指していますか？</h2><div class="clock-wrap">${clockSVG(it.h,it.m)}</div><div class="choices grid2">${it.opts.map((o,j)=>`<button class="btn choice" data-a="p" data-v="${j}">${o.h}時${o.m}分</button>`).join('')}</div></div>${quitLink()}`,
+      {p:v=>{if(it.opts[v].ok)T.s.vis++;i++;i<items.length?ask():trail()}});
+  };
+  ask();
+}
+
+function placeDots(N){
+  for(let tries=0;tries<200;tries++){
+    const p=[];let guard=0;
+    while(p.length<N&&guard<3000){guard++;const x=10+Math.random()*80,y=10+Math.random()*80;if(p.every(q=>Math.hypot(q.x-x,q.y-y)>19))p.push({x,y})}
+    if(p.length===N)return p;
+  }
+  return [...Array(N)].map((_,i)=>({x:14+(i%4)*24,y:14+Math.floor(i/4)*24}));
+}
+function trail(){
+  const N=12,pos=placeDots(N);let next=1,errs=0,t0=0;
+  const finish=()=>{const sec=(performance.now()-t0)/1000;let s=sec<=40?3:sec<=70?2:sec<=110?1:0;if(errs>=3)s=Math.max(0,s-1);T.s.trail=s;T.trailSec=sec;T.trailErr=errs;clearTimers();later(fluency,500)};
+  const play=()=>{
+    screen(`${prog(5)}<div class="task"><div class="trail-top"><span>次は <b id="nx">1</b></span><span id="tt" class="tnum">0 秒</span></div><div class="board">${pos.map((p,i)=>`<button class="dot" data-a="d" data-v="${i+1}" style="left:${p.x}%;top:${p.y}%">${i+1}</button>`).join('')}</div><button class="btn ghost" data-a="skip">むずかしいので次へ進む</button></div>`,
+      {d:(v,b)=>{v=+v;if(v===next){b.classList.add('done');b.disabled=true;next++;$('#nx').textContent=next<=N?next:'—';if(next>N)finish()}else if(v>next){errs++;shake(b)}},
+       skip:()=>{T.s.trail=0;T.trailSec=null;fluency()}});
+    t0=performance.now();
+    every(()=>{const e=$('#tt');if(e)e.textContent=Math.floor((performance.now()-t0)/1000)+' 秒'},250);
+  };
+  screen(`${prog(5)}<div class="task"><h2 class="q">1 から ${N} まで、数字を順番に押してください</h2><p class="note">できるだけ速く、正確に。時間を測ります。まちがえても、正しい数字を押せば先に進めます。</p><button class="btn primary wide" data-a="go">始める</button></div>${quitLink()}`,{go:play});
+}
+
+function fluency(){
+  const an=shuffle(ANIMALS).slice(0,10),words=shuffle([...an,...shuffle(OTHERS).slice(0,10)]),sel=new Set();let left=30;
+  const done=()=>{clearTimers();const hits=[...sel].filter(w=>an.includes(w)).length,net=hits-(sel.size-hits);T.s.flu=net>=9?3:net>=6?2:net>=3?1:0;T.fluNet=net;
+    screen(`${prog(6)}<div class="task center"><h2 class="q">時間になりました</h2><p class="note">最後の課題です。はじめに覚えたことばを思い出していただきます。</p><button class="btn primary wide" data-a="go">次へ</button></div>`,{go:recall2})};
+  const play=()=>{
+    screen(`${prog(6)}<div class="task"><div class="trail-top"><span>動物を押す</span><span id="tt" class="tnum">残り 30 秒</span></div><div class="chips">${words.map(w=>`<button class="chip" data-a="t" data-v="${w}">${w}</button>`).join('')}</div></div>`,
+      {t:(v,b)=>{sel.has(v)?sel.delete(v):sel.add(v);b.classList.toggle('on',sel.has(v))}});
+    every(()=>{left--;const e=$('#tt');if(e)e.textContent=`残り ${Math.max(left,0)} 秒`;if(left<=0)done()},1000);
+  };
+  screen(`${prog(6)}<div class="task"><h2 class="q">30秒の間に、<u>動物</u>の名前をできるだけ多く押してください</h2><p class="note">動物ではないものを押すと減点です。押しまちがえたら、もう一度押すと取り消せます。</p><button class="btn primary wide" data-a="go">始める</button></div>${quitLink()}`,{go:play});
+}
+
+function recall2(){
+  pickScreen({head:prog(7),sub:'最後の課題です。思い出せる分だけで大丈夫です。',q:'はじめに覚えた5つのことばを選んでください',words:shuffle([...T.set.w,...T.set.d]),max:5,foot:quitLink(),
+    onDone:s=>{T.s.del=scorePick(s,T.set.w);finishTest()}});
+}
+function finishTest(){
+  const s=T.s,dom={orient:s.orient,memory:s.imm+s.del,attn:s.calc+s.dig,vis:s.vis,exec:s.trail+s.flu};
+  const total=Object.values(dom).reduce((a,b)=>a+b,0);
+  const rec={date:new Date().toISOString(),total,dom,detail:{imm:s.imm,del:s.del,trailSec:T.trailSec?Math.round(T.trailSec):null,flu:T.fluNet}};
+  store.tests.push(rec);save();resultView(rec,true);
+}
+
+function resultView(rec,fresh){
+  setNav(fresh?'check':'record');
+  const lv=levelOf(rec.total);
+  const rat=DOMS.map(d=>({...d,v:rec.dom[d.k],r:rec.dom[d.k]/d.max}));
+  const weak=rat.filter(d=>d.r<0.8).sort((a,b)=>a.r-b.r);
+  const recIds=[...new Set((weak.length?weak:rat.slice().sort((a,b)=>a.r-b.r)).slice(0,2).flatMap(d=>DOM_GAMES[d.k]))].slice(0,3);
+  const bands=[['0〜17','要相談','bad',0,17],['18〜23','注意','warn',18,23],['24〜26','やや注意','mild',24,26],['27〜30','良好','good',27,30]];
+  const dt=rec.detail||{};
+  screen(`
+  <div class="task">
+    <p class="eyebrow">${fresh?'おつかれさまでした':'チェック結果'}　${fmtDate(rec.date)}</p>
+    <div class="score-head"><div class="score-big">${rec.total}<small> / 30点</small></div><span class="pill ${lv.c}">判定の目安：${lv.n}</span></div>
+    <div class="scale">${bands.map(b=>`<div class="pill ${b[2]} ${rec.total>=b[3]&&rec.total<=b[4]?'on':''}" style="border-radius:8px;font-size:.8rem;padding:6px 2px">${b[0]}<br>${b[1]}</div>`).join('')}</div>
+    <p>${lv.msg}</p>
+  </div>
+  <section>
+    <h2>分野ごとの点数</h2>
+    <div class="card doms">${rat.map(d=>`<div class="dom ${d.r<0.8?'low':''}"><div class="dom-name">${d.n}<small>${d.d}</small></div><div class="bar"><i style="width:${d.r*100}%"></i></div><div class="dom-val">${d.v} / ${d.max}</div></div>`).join('')}</div>
+    ${dt.imm!=null?`<p class="note">すぐ思い出す：${dt.imm} / 5　時間をおいて思い出す：${dt.del} / 5${dt.trailSec?`　数字つなぎ：${dt.trailSec}秒`:''}${dt.flu!=null?`　動物探し：${dt.flu}語`:''}</p>`:''}
+    ${rat.find(d=>d.k==='memory'&&d.r<0.8)?'<p class="note">「時間をおいて思い出す」点数の低下は、もの忘れの初期に最も現れやすいサインです。前回より下がっていないかを見てください。</p>':''}
+  </section>
+  <section>
+    <h2>${weak.length?'点数が低めの分野に合わせたおすすめ':'さらに伸ばすためのおすすめ'}</h2>
+    <div class="games">${recIds.map(id=>gameCard(GAME[id])).join('')}</div>
+  </section>
+  <section>
+    <p class="disclaimer">このチェックは、MMSE・長谷川式（HDS-R）・MoCA など医療機関で使われる検査の考え方を参考に作った簡易チェックで、医学的な診断ではありません。点数の区切りも目安です。体調・睡眠不足・画面操作への慣れでも点数は変わります。気になる変化があれば、かかりつけ医や地域包括支援センターにご相談ください。</p>
+    <div class="row"><button class="btn primary" data-a="nav" data-v="record">記録の推移を見る</button><button class="btn" data-a="nav" data-v="home">ホームへ</button></div>
+  </section>`,{game:gameIntro});
+}
+
+/* ---------- training ---------- */
+function trainView(){
+  setNav('train');
+  screen(`<section class="hero" style="margin-top:0"><p class="eyebrow">脳トレ</p><h1>1回2〜3分、いくつかを組み合わせて</h1><p class="lead">記憶・注意・判断など、使う力の違うトレーニングを毎日少しずつ続けるのがおすすめです。難しさは3段階から選べます。</p></section><div class="games">${GAMES.map(gameCard).join('')}</div>`,{game:gameIntro});
+}
+function gameIntro(id){
+  setNav('train');
+  const g=GAME[id];
+  screen(`<div class="task"><span class="tag">${g.area}</span><h2 class="q">${g.name}</h2><p>${g.how}</p>
+    <h3 style="font-size:1.1rem">難しさを選んで始める</h3>
+    <div class="choices">${g.levels.map((l,i)=>{const b=bestOf(id,i);return `<button class="btn choice" data-a="lv" data-v="${i}" style="flex-direction:column;gap:0">${l}${b?`<small style="font-size:.78rem;font-weight:400;color:var(--muted)">自己ベスト ${b.label}</small>`:''}</button>`}).join('')}</div>
+    <button class="btn ghost" data-a="nav" data-v="train">脳トレ一覧にもどる</button></div>`,
+    {lv:v=>PLAY[id](+v)});
+}
+function gameResult(id,lv,pts,label,detail){
+  const g=GAME[id],prev=bestOf(id,lv);
+  (store.train[id]=store.train[id]||[]).push({date:new Date().toISOString(),lv,pts,label});
+  if(store.train[id].length>80)store.train[id].shift();save();
+  const isBest=!prev||(g.better==='low'?pts<prev.pts:pts>prev.pts);
+  screen(`<div class="task center"><p class="eyebrow">${g.name}・${g.levels[lv]}</p><div class="score-big">${label}</div>${detail?`<p class="note">${detail}</p>`:''}
+    <span class="pill ${isBest?'good':'mild'}">${isBest?(prev?'自己ベスト更新':'初回の記録'):`自己ベスト ${prev.label}`}</span>
+    <div class="row" style="justify-content:center"><button class="btn primary" data-a="again">もう一度</button><button class="btn" data-a="intro">難しさを変える</button><button class="btn" data-a="nav" data-v="train">ほかの脳トレ</button></div></div>`,
+    {again:()=>PLAY[id](lv),intro:()=>gameIntro(id)});
+}
+const PLAY={
+  touch(lv){
+    const N=[9,16,25][lv],cols=[3,4,5][lv];let next=1,err=0;
+    screen(`<div class="task"><div class="trail-top"><span>次は <b id="nx">1</b></span><span id="tt" class="tnum">0.0 秒</span></div><div class="tgrid" style="grid-template-columns:repeat(${cols},1fr)">${shuffle([...Array(N)].map((_,i)=>i+1)).map(n=>`<button class="tcell" data-a="d" data-v="${n}">${n}</button>`).join('')}</div></div>`,
+      {d:(v,b)=>{v=+v;if(v===next){b.classList.add('done');b.disabled=true;next++;$('#nx').textContent=next<=N?next:'—';if(next>N){const sec=Math.round((performance.now()-t0)/100)/10;gameResult('touch',lv,sec,`${sec}秒`,`押しまちがい ${err}回`)}}else{err++;shake(b)}}});
+    const t0=performance.now();
+    every(()=>{const e=$('#tt');if(e)e.textContent=((performance.now()-t0)/1000).toFixed(1)+' 秒'},100);
+  },
+  pairs(lv){
+    const P=[6,8,10][lv],cols=[4,4,5][lv],faces=shuffle(FACES).slice(0,P),deck=shuffle([...faces,...faces]);
+    let open=[],lock=false,moves=0,got=0;const t0=performance.now();
+    screen(`<div class="task"><div class="trail-top"><span>そろった組 <b id="pg">0</b> / ${P}</span><span>めくった回数 <b id="pm">0</b></span></div><div class="pgrid" style="grid-template-columns:repeat(${cols},1fr)">${deck.map((f,i)=>`<button class="pcard" data-a="c" data-v="${i}" aria-label="札 ${i+1}"><span class="face" style="color:${f.c}">${f.k}</span></button>`).join('')}</div></div>`,
+      {c:(v,b)=>{
+        if(lock||b.classList.contains('up'))return;
+        b.classList.add('up');open.push({i:+v,b});
+        if(open.length<2)return;
+        moves++;$('#pm').textContent=moves;const [a,c]=open;
+        if(deck[a.i].k===deck[c.i].k){a.b.classList.add('got');c.b.classList.add('got');a.b.disabled=c.b.disabled=true;open=[];got++;$('#pg').textContent=got;
+          if(got===P)later(()=>gameResult('pairs',lv,moves,`${moves}回`,`かかった時間 ${Math.round((performance.now()-t0)/1000)}秒（最少は ${P}回）`),700)}
+        else{lock=true;later(()=>{a.b.classList.remove('up');c.b.classList.remove('up');open=[];lock=false},1000)}
+      }});
+  },
+  stroop(lv){
+    const C=[{n:'あか',c:'#D0312D'},{n:'あお',c:'#1F5FC4'},{n:'みどり',c:'#1E8A45'},{n:'きいろ',c:'#C99700'}];
+    const N=lv===0?15:20;let i=0,err=0,cur;const t0=performance.now();
+    const nextT=()=>{const ink=rand(4);let word='●●●';if(lv>0){let w=ink;if(Math.random()<(lv===1?.5:.85)){do{w=rand(4)}while(w===ink)}word=C[w].n}
+      cur=ink;const sw=$('#sw');sw.textContent=word;sw.style.color=C[ink].c;$('#sn').textContent=`${i+1} / ${N} 問目`};
+    screen(`<div class="task"><div class="trail-top"><span id="sn"></span><span id="fb" class="fb"></span></div><p class="qsub">文字の<b>色</b>を選んでください</p><div class="stroop-card"><span id="sw"></span></div><div class="choices grid2">${C.map((c,j)=>`<button class="btn choice" data-a="c" data-v="${j}"><i class="sw" style="background:${c.c}"></i>${c.n}</button>`).join('')}</div></div>`,
+      {c:v=>{const ok=+v===cur;if(!ok)err++;const fb=$('#fb');fb.textContent=ok?'○ 正解':'× ちがいます';fb.className='fb '+(ok?'ok':'ng');i++;
+        if(i>=N){const sec=(performance.now()-t0)/1000,pts=Math.round((sec+err*3)*10)/10;gameResult('stroop',lv,pts,`${pts}秒`,`かかった時間 ${sec.toFixed(1)}秒・まちがい ${err}回（1回につき3秒加算）`)}else nextT()}});
+    nextT();
+  },
+  calc(lv){
+    let left=60,correct=0,tried=0,val='',cur;
+    const gen=()=>{
+      if(lv===0){const a=1+rand(9),b=1+rand(9);return Math.random()<.5?{q:`${a} + ${b}`,a:a+b}:{q:`${Math.max(a,b)} − ${Math.min(a,b)}`,a:Math.max(a,b)-Math.min(a,b)}}
+      if(lv===1){const a=10+rand(90),b=1+rand(9);return Math.random()<.5?{q:`${a} + ${b}`,a:a+b}:{q:`${a} − ${b}`,a:a-b}}
+      if(Math.random()<.4){const a=2+rand(8),b=2+rand(8);return {q:`${a} × ${b}`,a:a*b}}
+      const a=10+rand(90),b=10+rand(90);return Math.random()<.5?{q:`${a} + ${b}`,a:a+b}:{q:`${Math.max(a,b)} − ${Math.min(a,b)}`,a:Math.max(a,b)-Math.min(a,b)};
+    };
+    const draw=()=>{$('#pd').textContent=val||'　'};
+    const nextQ=()=>{cur=gen();val='';$('#cq').textContent=cur.q+' =';draw()};
+    screen(`<div class="task"><div class="trail-top"><span>正解 <b id="cc">0</b> 問</span><span id="tt" class="tnum">残り 60 秒</span></div><div class="calc-q" id="cq"></div><div class="pad-display"><span id="pd">　</span></div><p class="fb" id="fb" style="text-align:center"></p>${keypad()}</div>`,
+      {k:v=>{if(val.length<3){val+=v;draw()}},del:()=>{val=val.slice(0,-1);draw()},
+       ok:()=>{if(!val)return;tried++;const ok=+val===cur.a;if(ok){correct++;$('#cc').textContent=correct}const fb=$('#fb');fb.textContent=ok?'○ 正解':`× 正しくは ${cur.a}`;fb.className='fb '+(ok?'ok':'ng');nextQ()}});
+    nextQ();
+    every(()=>{left--;const e=$('#tt');if(e)e.textContent=`残り ${left} 秒`;if(left<=0)gameResult('calc',lv,correct,`${correct}問正解`,`答えた ${tried}問のうち ${correct}問正解`)},1000);
+  },
+  shop(lv){
+    const N=[4,6,8][lv],items=shuffle(SHOP).slice(0,N*2),targets=items.slice(0,N),sec=N*3;let left=sec;
+    const ask=()=>pickScreen({sub:'お店に着きました。メモは手元にありません。',q:'メモにあった品物を選んでください',words:shuffle(items),max:N,
+      onDone:s=>{const hit=s.filter(x=>targets.includes(x)).length,pts=Math.max(0,hit-(s.length-hit));gameResult('shop',lv,pts,`${pts} / ${N}点`,`正しく選べた ${hit}品・まちがい ${s.length-hit}品`)}});
+    screen(`<div class="task"><h2 class="q">買い物メモを覚えてください</h2><div class="memo">${targets.map(t=>`<div class="memo-line">${t}</div>`).join('')}</div><div class="timer-line"><span id="tl">あと ${left} 秒</span><div class="bar thin"><i id="tb" style="width:100%"></i></div></div><button class="btn primary wide" data-a="ok">覚えました</button></div>`,{ok:ask});
+    every(()=>{left--;const tl=$('#tl');if(tl){tl.textContent=`あと ${Math.max(0,left)} 秒`;$('#tb').style.width=Math.max(0,left/sec*100)+'%'}if(left<=0)ask()},1000);
+  },
+  odd(lv){
+    const n=[5,10,15][lv],qs=shuffle(ODD).slice(0,n);let i=0,c=0;
+    const ask=()=>{const q=qs[i];let answered=false;
+      screen(`<div class="task"><p class="qsub">${i+1} / ${n} 問目</p><h2 class="q">仲間はずれはどれですか？</h2><div class="choices grid2">${shuffle(q.w).map(o=>`<button class="btn choice" data-a="p" data-v="${o}">${o}</button>`).join('')}</div><div id="ex" style="display:grid;gap:12px"></div></div>`,
+        {p:v=>{if(answered)return;answered=true;const ok=v===q.a;if(ok)c++;
+          document.querySelectorAll('.choice').forEach(b=>{b.disabled=true;if(b.dataset.v===q.a)b.classList.add('right');else if(b.dataset.v===v)b.classList.add('wrong')});
+          $('#ex').innerHTML=`<div class="explain ${ok?'ok':'ng'}"><b>${ok?'正解です':'ざんねん'}</b>　「${q.a}」は${q.why}</div><button class="btn primary wide" data-a="n">${i+1<n?'次の問題へ':'結果を見る'}</button>`},
+         n:()=>{i++;i<n?ask():gameResult('odd',lv,c,`${c} / ${n}問正解`,'')}});
+    };
+    ask();
+  },
+};
+
+/* ---------- records ---------- */
+function chartSVG(data){
+  const W=640,H=250,pl=34,pr=18,pt=18,pb=34,n=data.length;
+  const x=i=>n===1?pl+(W-pl-pr)/2:pl+i*(W-pl-pr)/(n-1),y=v=>pt+(30-v)/30*(H-pt-pb);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="チェック得点の推移"><rect class="c-band" x="${pl}" y="${y(30)}" width="${W-pl-pr}" height="${y(27)-y(30)}"/>`;
+  [0,10,20,30].forEach(v=>{s+=`<line class="c-grid" x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}"/><text class="c-lbl" x="${pl-8}" y="${y(v)+4}" text-anchor="end">${v}</text>`});
+  [[24,'24 やや注意'],[27,'27 良好']].forEach(([v,t])=>{s+=`<line class="c-th" x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}"/><text class="c-lbl" x="${W-pr-4}" y="${y(v)-5}" text-anchor="end">${t}</text>`});
+  const pts=data.map((d,i)=>[x(i),y(d.total)]);
+  if(n>1){s+=`<path class="c-area" d="M${pts[0][0]},${y(0)} L${pts.map(p=>p.join(',')).join(' L')} L${pts[n-1][0]},${y(0)} Z"/><path class="c-line" d="M${pts.map(p=>p.join(',')).join(' L')}"/>`}
+  data.forEach((d,i)=>{s+=`<circle class="c-pt${i===n-1?' last':''}" cx="${pts[i][0]}" cy="${pts[i][1]}" r="${i===n-1?7:5}"/><text class="c-lbl" x="${pts[i][0]}" y="${H-10}" text-anchor="middle">${d.lbl}</text>`;
+    if(i===n-1||n<=6)s+=`<text class="c-val" x="${pts[i][0]}" y="${pts[i][1]-13}" text-anchor="middle">${d.total}</text>`});
+  return s+'</svg>';
+}
+function record(){
+  setNav('record');
+  const t=store.tests,sample=!t.length;
+  const data=sample?[{total:25,lbl:'例 1回目'},{total:26,lbl:'例 2回目'},{total:27,lbl:'例 3回目'}]:t.slice(-12).map(r=>({total:r.total,lbl:md(r.date)}));
+  const trainRows=GAMES.map(g=>{const l=store.train[g.id]||[];if(!l.length)return '';const last=l[l.length-1];const b=bestOf(g.id,last.lv);
+    return `<tr><td>${g.name}</td><td class="num">${l.length}回</td><td>${md(last.date)}　${g.levels[last.lv].replace(/（.*）/,'')}・${last.label}</td><td>${b.label}</td></tr>`}).join('');
+  let armed=false;
+  screen(`<section class="hero" style="margin-top:0"><p class="eyebrow">記録</p><h1>チェック得点の推移</h1><p class="lead">記録はこの端末のブラウザの中だけに保存されます。同じ端末・同じブラウザで続けてください。</p></section>
+  <div class="card chart">${sample?'<p class="sample-flag">サンプル表示：まだ記録がないため、表示例を出しています</p>':''}${chartSVG(data)}</div>
+  ${t.length?`<section><h2>チェックの履歴</h2><div class="card tbl-wrap"><table><thead><tr><th>日付</th><th>合計</th><th>判定</th>${DOMS.map(d=>`<th>${d.n}</th>`).join('')}<th></th></tr></thead><tbody>
+    ${t.map((r,i)=>({r,i})).reverse().map(({r,i})=>`<tr><td>${fmtDate(r.date)}</td><td class="num"><b>${r.total}</b></td><td><span class="pill ${levelOf(r.total).c}" style="font-size:.8rem;padding:.05rem .6rem">${levelOf(r.total).n}</span></td>${DOMS.map(d=>`<td class="num">${r.dom[d.k]}/${d.max}</td>`).join('')}<td><button class="link" data-a="open" data-v="${i}">詳細</button></td></tr>`).join('')}
+  </tbody></table></div></section>`:''}
+  <section><h2>脳トレの記録</h2>${trainRows?`<div class="card tbl-wrap"><table><thead><tr><th>種類</th><th>回数</th><th>最新</th><th>自己ベスト（同じ難しさ）</th></tr></thead><tbody>${trainRows}</tbody></table></div>`:'<p class="note">まだ脳トレの記録がありません。</p>'}</section>
+  ${(t.length||trainRows)?'<p style="margin-top:28px"><button class="link danger" data-a="clear" id="clr">記録をすべて消す</button></p>':''}`,
+  {open:v=>resultView(t[+v],false),
+   clear:(v,b)=>{if(!armed){armed=true;b.textContent='本当に消す場合は、もう一度押してください';return}store.tests=[];store.train={};save();record()}});
+}
+
+home();
+</script>
+</body>
+</html>
