@@ -45,6 +45,14 @@ button{font:inherit;color:inherit}
 .brand{display:flex;align-items:center;gap:10px;font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:1.1rem}
 .brand-mark{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-size:.95rem}
 .fsbtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.3rem .9rem;font-size:.85rem;cursor:pointer;min-height:2.4rem}
+.top-btns{display:flex;flex-wrap:wrap;gap:8px;min-width:0;max-width:100%}
+#whobtn{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fsbtn{flex:none;white-space:nowrap}
+.who-card{display:grid;gap:12px}
+.who-card.cur{border:2px solid var(--accent)}
+.who-name{font-size:1.25rem;font-weight:700}
+.who-edit{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.who-edit input{font:inherit;font-size:1.1rem;min-height:3.3rem;padding:.4rem .8rem;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);flex:1 1 10rem;min-width:0}
 .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
 .nav button{white-space:nowrap;padding:0 4px;border:1px solid var(--line);background:var(--surface);border-radius:12px;min-height:3rem;font-weight:700;cursor:pointer;font-size:.95rem}
 .nav button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -226,7 +234,7 @@ td.num{text-align:right}
   <header class="top">
     <div class="top-row">
       <div class="brand"><span class="brand-mark" aria-hidden="true">脳</span>あたまの健康手帳</div>
-      <button class="fsbtn" id="fsbtn" data-a="fs">文字：標準</button>
+      <div class="top-btns"><button class="fsbtn" id="whobtn" data-a="nav" data-v="who">使う人：1人目</button><button class="fsbtn" id="fsbtn" data-a="fs">文字：標準</button></div>
     </div>
     <nav class="nav" aria-label="メニュー">
       <button data-a="nav" data-v="home">ホーム</button>
@@ -310,9 +318,18 @@ const md=iso=>{const d=new Date(iso);return `${d.getMonth()+1}/${d.getDate()}`};
 function shake(b){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
 
 /* storage (this browser only) */
-function load(){try{const s=JSON.parse(localStorage.getItem('atama_v1')||'null');if(s&&Array.isArray(s.tests))return Object.assign({train:{},fs:'m'},s)}catch(e){}return {tests:[],train:{},fs:'m'}}
-function save(){try{localStorage.setItem('atama_v1',JSON.stringify(store))}catch(e){}}
+/* 使う人ごとに別のキーに保存（1人目は従来どおり atama_v1） */
+const PKEYS=['atama_v1','atama_v1_p2','atama_v1_p3'];
+function loadPeople(){try{const m=JSON.parse(localStorage.getItem('atama_people')||'null');if(m&&Array.isArray(m.names))return {cur:[0,1,2].includes(m.cur)?m.cur:0,names:[0,1,2].map(i=>typeof m.names[i]==='string'?m.names[i]:'')}}catch(e){}return {cur:0,names:['','','']}}
+function savePeople(){try{localStorage.setItem('atama_people',JSON.stringify(people))}catch(e){}}
+let people=loadPeople();
+const pname=i=>people.names[i]||`${i+1}人目`;
+function load(i=people.cur,fs='m'){try{const s=JSON.parse(localStorage.getItem(PKEYS[i])||'null');if(s&&Array.isArray(s.tests))return Object.assign({train:{},fs:'m'},s)}catch(e){}return {tests:[],train:{},fs}}
+function save(){try{localStorage.setItem(PKEYS[people.cur],JSON.stringify(store))}catch(e){}}
 let store=load();
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+function applyWho(){$('#whobtn').textContent='使う人：'+pname(people.cur)}
+applyWho();
 
 /* font size */
 const FS={m:['19px','標準'],l:['22px','大'],xl:['25px','特大']};
@@ -322,7 +339,7 @@ applyFs();
 /* actions */
 let A={};
 const BASE={
-  nav:v=>{({home,check:startTest,train:trainView,record})[v]()},
+  nav:v=>{({home,check:startTest,train:trainView,record,who})[v]()},
   fs:()=>{const k=Object.keys(FS);store.fs=k[(k.indexOf(store.fs)+1)%k.length];save();applyFs()},
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const f=A[b.dataset.a]||BASE[b.dataset.a];if(f)f(b.dataset.v,b)});
@@ -694,7 +711,7 @@ function record(){
   const trainRows=GAMES.map(g=>{const l=store.train[g.id]||[];if(!l.length)return '';const last=l[l.length-1];const b=bestOf(g.id,last.lv);
     return `<tr><td>${g.name}</td><td class="num">${l.length}回</td><td>${md(last.date)}　${g.levels[last.lv].replace(/（.*）/,'')}・${last.label}</td><td>${b.label}</td></tr>`}).join('');
   let armed=false;
-  screen(`<section class="hero" style="margin-top:0"><p class="eyebrow">記録</p><h1>チェック得点の推移</h1><p class="lead">記録はこの端末のブラウザの中だけに保存されます。同じ端末・同じブラウザで続けてください。</p></section>
+  screen(`<section class="hero" style="margin-top:0"><p class="eyebrow">記録</p><h1>チェック得点の推移</h1><p class="lead">いま表示しているのは「<b>${esc(pname(people.cur))}</b>」の記録です。記録はこの端末のブラウザの中だけに保存されます。同じ端末・同じブラウザで続けてください。</p></section>
   <div class="card chart">${sample?'<p class="sample-flag">サンプル表示：まだ記録がないため、表示例を出しています</p>':''}${chartSVG(data)}</div>
   ${t.length?`<section><h2>チェックの履歴</h2><div class="card tbl-wrap"><table><thead><tr><th>日付</th><th>合計</th><th>判定</th>${DOMS.map(d=>`<th>${d.n}</th>`).join('')}<th></th></tr></thead><tbody>
     ${t.map((r,i)=>({r,i})).reverse().map(({r,i})=>`<tr><td>${fmtDate(r.date)}</td><td class="num"><b>${r.total}</b></td><td><span class="pill ${levelOf(r.total).c}" style="font-size:.8rem;padding:.05rem .6rem">${levelOf(r.total).n}</span></td>${DOMS.map(d=>`<td class="num">${r.dom[d.k]}/${d.max}</td>`).join('')}<td><button class="link" data-a="open" data-v="${i}">詳細</button></td></tr>`).join('')}
@@ -703,6 +720,26 @@ function record(){
   ${(t.length||trainRows)?'<p style="margin-top:28px"><button class="link danger" data-a="clear" id="clr">記録をすべて消す</button></p>':''}`,
   {open:v=>resultView(t[+v],false),
    clear:(v,b)=>{if(!armed){armed=true;b.textContent='本当に消す場合は、もう一度押してください';return}store.tests=[];store.train={};save();record()}});
+}
+
+/* ---------- 使う人の切り替え ---------- */
+function who(){
+  setNav('');
+  let editing=-1;
+  const draw=()=>{
+    screen(`<section class="hero" style="margin-top:0"><p class="eyebrow">使う人</p><h1>使う人を切り替える</h1><p class="lead">3人まで、記録を人ごとに分けて残せます。チェックや脳トレの前に、ご自分の名前になっているか確かめてください。</p></section>
+    <div style="display:grid;gap:14px">${[0,1,2].map(i=>{const d=i===people.cur?store:load(i),n=d.tests.length,last=d.tests[n-1];
+      return `<div class="card who-card${i===people.cur?' cur':''}"><div class="who-name">${esc(pname(i))}</div>
+      <p class="note">${n?`チェック ${n}回・前回 ${fmtDate(last.date)}`:'チェックの記録はまだありません'}</p>
+      ${editing===i?`<div class="who-edit"><input id="nm" maxlength="10" value="${esc(people.names[i])}" placeholder="${i+1}人目" aria-label="名前"><button class="btn primary" data-a="nmok" data-v="${i}">名前を保存</button></div>`
+      :`<div class="row">${i===people.cur?'<span class="pill good">いま使っています</span>':`<button class="btn primary" data-a="use" data-v="${i}">この人に切り替える</button>`}<button class="link" data-a="nmed" data-v="${i}">名前を変える</button></div>`}</div>`}).join('')}</div>
+    <p class="note" style="margin-top:20px">名前はこの端末の中だけに保存されます。</p>`,{
+      use:v=>{const fs=store.fs;people.cur=+v;savePeople();store=load(+v,fs);applyFs();applyWho();home()},
+      nmed:v=>{editing=+v;draw();const el=$('#nm');if(el)el.focus()},
+      nmok:v=>{people.names[+v]=($('#nm').value||'').trim().slice(0,10);savePeople();applyWho();editing=-1;draw()},
+    });
+  };
+  draw();
 }
 
 home();
