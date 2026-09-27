@@ -165,6 +165,16 @@ section > h2{font-size:1.3rem}
 .fb{font-weight:700;min-height:1.6rem}
 .fb.ok{color:var(--good)} .fb.ng{color:var(--bad)}
 .calc-q{font-size:2.6rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums}
+body.focus .top{position:static}
+body.focus #app{min-height:100vh;min-height:100dvh}
+.task.calc{gap:10px;padding-block:14px}
+.task.calc .trail-top{line-height:1.4}
+.calc-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px}
+.calc-row .calc-q{line-height:1.2;white-space:nowrap}
+.calc-row.stack{flex-direction:column}
+.calc-row .pad-display{min-width:4.6em;min-height:3.6rem;padding:2px 8px;align-items:center}
+.calc-row #pd{letter-spacing:.04em;line-height:1.2}
+.task.calc .fb{min-height:1.4em;line-height:1.4}
 
 .memo{justify-self:center;width:100%;max-width:22rem;background:#FFFDF3;color:#2A2A22;border-radius:6px;padding:18px 22px;box-shadow:0 2px 0 #E4DCBC,0 6px 14px rgba(0,0,0,.08);
   background-image:repeating-linear-gradient(#FFFDF3 0 2.4rem,#D9E4EC 2.4rem calc(2.4rem + 1px))}
@@ -350,7 +360,9 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Backspace'&&A.del){A.del();e.preventDefault()}
   else if(e.key==='Enter'&&A.ok){A.ok();e.preventDefault()}
 });
-function screen(html,acts){clearTimers();A=Object.assign({},acts||{});app.innerHTML=html;window.scrollTo(0,0)}
+function screen(html,acts){clearTimers();A=Object.assign({},acts||{});document.body.classList.remove('focus');app.innerHTML=html;window.scrollTo(0,0)}
+/* 見出しとメニューを上に送り、遊ぶ画面だけを1画面に出す */
+function focusMode(){document.body.classList.add('focus');window.scrollTo(0,app.getBoundingClientRect().top+scrollY-8)}
 function setNav(v){document.querySelectorAll('.nav button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.v===v));document.querySelectorAll('.nav button[aria-current]').forEach(b=>b.setAttribute('aria-current','page'))}
 const keypad=()=>`<div class="keypad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="key" data-a="k" data-v="${n}">${n}</button>`).join('')}<button class="key sub" data-a="del">1字けす</button><button class="key" data-a="k" data-v="0">0</button><button class="key ok" data-a="ok">決定</button></div>`;
 const quitLink=()=>`<p class="quit"><button class="link" data-a="nav" data-v="home">チェックを中断する</button></p>`;
@@ -670,11 +682,14 @@ const PLAY={
       const a=10+rand(90),b=10+rand(90);return Math.random()<.5?{q:`${a} + ${b}`,a:a+b}:{q:`${Math.max(a,b)} − ${Math.min(a,b)}`,a:Math.max(a,b)-Math.min(a,b)};
     };
     const draw=()=>{$('#pd').textContent=val||'　'};
-    const nextQ=()=>{cur=gen();val='';$('#cq').textContent=cur.q+' =';draw()};
-    screen(`<div class="task"><div class="trail-top"><span>正解 <b id="cc">0</b> 問</span><span id="tt" class="tnum">残り 60 秒</span></div><div class="calc-q" id="cq"></div><div class="pad-display"><span id="pd">　</span></div><p class="fb" id="fb" style="text-align:center"></p>${keypad()}</div>`,
+    const nextQ=()=>{cur=gen();val='';$('#cq').textContent=(cur.q+' =').replace(/ /g,'\u2009');draw()};
+    screen(`<div class="task calc"><div class="trail-top"><span>正解 <b id="cc">0</b> 問</span><span id="tt" class="tnum">残り 60 秒</span></div><div class="calc-row"><span class="calc-q" id="cq"></span><div class="pad-display"><span id="pd">　</span></div></div><p class="fb" id="fb" style="text-align:center"></p>${keypad()}</div>`,
       {k:v=>{if(val.length<3){val+=v;draw()}},del:()=>{val=val.slice(0,-1);draw()},
        ok:()=>{if(!val)return;tried++;const ok=+val===cur.a;if(ok){correct++;$('#cc').textContent=correct}const fb=$('#fb');fb.textContent=ok?'○ 正解':`× 正しくは ${cur.a}`;fb.className='fb '+(ok?'ok':'ng');nextQ()}});
-    nextQ();
+    /* いちばん長い式でも横に並ぶか確かめ、並ばない幅なら最初から縦に並べる（問題ごとにボタンの位置がずれないように） */
+    $('#cq').textContent=['8 + 8 =','88 − 8 =','88 − 88 ='][lv].replace(/ /g,'\u2009');$('#pd').textContent='888';
+    if($('.calc-row .pad-display').offsetTop>$('#cq').offsetTop+5)$('.calc-row').classList.add('stack');
+    nextQ();focusMode();
     every(()=>{left--;const e=$('#tt');if(e)e.textContent=`残り ${left} 秒`;if(left<=0)gameResult('calc',lv,correct,`${correct}問正解`,`答えた ${tried}問のうち ${correct}問正解`)},1000);
   },
   shop(lv){
